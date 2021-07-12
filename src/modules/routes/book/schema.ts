@@ -18,7 +18,12 @@ export const BookTO = {
             properties: {
                 success: { type: 'string' },
                 message: { type: 'string' },
-                data: { type: 'string' }
+                data: { 
+                    title: { type: 'string' },
+                    author: { type: 'string' },
+                    subject: { type: 'string' },
+                    year: { type: 'string' },
+                 }
             }
         }
     }
@@ -35,7 +40,12 @@ export const GetBookTO = {
             properties: {
                 success: { type: 'string' },
                 message: { type: 'string' },
-                data: { type: 'string' }
+                data: { 
+                    title: { type: 'string' },
+                    author: { type: 'string' },
+                    subject: { type: 'string' },
+                    year: { type: 'string' },
+                 }
             }
         }
     }
