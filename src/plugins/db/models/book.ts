@@ -2,7 +2,7 @@ import { BuildOptions, DataTypes, Model, Sequelize } from "sequelize";
 
 export interface BooksAttributes {
     bookId?: number;
-    title: string;
+    bookTitle: string;
     author: string;
     subject: string;
     year: number;
@@ -20,7 +20,7 @@ export type BooksStatic = typeof Model & {
 
 const book = {
     bookId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-    title: { type: DataTypes.STRING, allowNull: false, unique: false },
+    bookTitle: { type: DataTypes.STRING, allowNull: false, unique: false },
     author: { type: DataTypes.STRING, allowNull: false, unique: false },
     subject: { type: DataTypes.STRING, allowNull: false, unique: false },
     year: { type: DataTypes.INTEGER, allowNull: false, unique: false },

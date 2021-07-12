@@ -62,9 +62,9 @@ const dbPlugin = (async (server, opts, next) => {
             server.log.error('Unable to connect to the database:', err);
         });
 
-    const Book = BooksFactory(dbSequelize);
-    server.db.sync({force:true});
-    // server.db.sync();
+    // const Book = BooksFactory(dbSequelize);
+    // server.db.sync({force:true});
+    server.db.sync();
 
 });
 
