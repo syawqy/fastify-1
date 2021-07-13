@@ -2,12 +2,14 @@ import { fastify } from 'fastify';
 import fastifyBlipp from "fastify-blipp";
 import fastifySwagger from "fastify-swagger";
 import AutoLoad from "fastify-autoload";
+import apmServer from 'elastic-apm-node';
 import * as path from "path";
 import * as dotenv from 'dotenv';
 
 import { swagger } from './config/index';
 
 import dbPlugin from './plugins/db';
+import kafkaPlugin from './plugins/kafka';
 
 dotenv.config({
     path: path.resolve('.env'),
@@ -32,6 +34,11 @@ const dbUsername: string = process.env.DB_USERNAME;
 const dbPassword: string = process.env.DB_PASSWORD;
 
 const kafkaHost: string = process.env.KAFKA_HOST;
+
+var apm = apmServer.start({
+    serviceName: 'apm-server',
+    serverUrl: apmUrl,
+})
 
 export const createServer = () => new Promise((resolve, reject) => {
 
@@ -67,13 +74,16 @@ export const createServer = () => new Promise((resolve, reject) => {
     //-----------------------------------------------------
     // decorators
     server.decorate('conf', { port, secretKey, expireToken, redisPort, redistHost, apmUrl, dbDialect, db, dbHost, dbPort, dbUsername, dbPassword, kafkaHost });
+    //apm 
+    server.decorate('apm', apmServer);
 
     // plugin
     server.register(dbPlugin);
+    server.register(kafkaPlugin);
 
     //-----------------------------------------------------
     server.addHook('onRequest', async (request, reply, error) => {
-        // apm.setTransactionName(request.method + ' ' + request.url);
+        apm.setTransactionName('z ' + request.method + ' ' + request.url);
     });
 
     // global hook error handling for unhandled error
@@ -88,7 +98,7 @@ export const createServer = () => new Promise((resolve, reject) => {
             stack
         };
 
-        // apm.captureError(JSON.stringify(err));
+        apm.captureError(JSON.stringify(err));
     });
 
     // main

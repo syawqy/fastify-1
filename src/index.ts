@@ -14,24 +14,24 @@ createServer()
         //     }
         // });
 
-        // const apmServerStatus = server.apm.isStarted();
-        // if (apmServerStatus) {
-        //     server.log.info('Server connected to APM Server');
-        // } else {
-        //     server.log.info('Server not connected to APM Server');
-        // }
+        const apmServerStatus = server.apm.isStarted();
+        if (apmServerStatus) {
+            server.log.info('Server connected to APM Server');
+        } else {
+            server.log.info('Server not connected to APM Server');
+        }
 
-        // server.kafkaClient.on('ready', () => {
-        //     server.log.info('Kafka Client Connection has been established successfully.');
-        // });
-        // server.kafkaClient.on('error', (err) => {
-        //     server.apm.captureError(JSON.stringify({
-        //         method: 'Kafka',
-        //         err,
-        //     }));
+        server.kafkaClient.on('ready', () => {
+            server.log.info('Kafka Client Connection has been established successfully.');
+        });
+        server.kafkaClient.on('error', (err) => {
+            server.apm.captureError(JSON.stringify({
+                method: 'Kafka',
+                err,
+            }));
 
-        //     server.log.info('Server not connected to Kafka');
-        // });
+            server.log.info('Server not connected to Kafka');
+        });
 
         
 
