@@ -8,7 +8,7 @@ export const CreateBookTO = {
             bookTitle: { type: 'string' },
             author: { type: 'string' },
             subject: { type: 'string' },
-            year: { type: 'string' },
+            year: { type: 'number' },
         }
     },
     response: {
@@ -22,7 +22,7 @@ export const CreateBookTO = {
                     bookTitle: { type: 'string' },
                     author: { type: 'string' },
                     subject: { type: 'string' },
-                    year: { type: 'string' },
+                    year: { type: 'number' },
                  }
             }
         }

@@ -27,6 +27,13 @@ export default fp((server, opts, next) => {
                             data
                         });
                     }).catch(err => {
+                        server.apm.captureError({
+                            method: request.routerMethod,
+                            path: request.routerPath,
+                            param: request.body,
+                            error: err,
+                        });
+
                         return reply.code(400).send({
                             success: false,
                             message: 'Error insert to db.',
@@ -37,6 +44,13 @@ export default fp((server, opts, next) => {
             });
 
         } catch(error) {
+            server.apm.captureError({
+                method: request.routerMethod,
+                path: request.routerPath,
+                param: request.body,
+                error: error,
+            });
+
             request.log.error(error);
             return reply.send(400);
         }
@@ -55,6 +69,13 @@ export default fp((server, opts, next) => {
                     data
                 });
             }).catch(err => {
+                server.apm.captureError({
+                    method: request.routerMethod,
+                    path: request.routerPath,
+                    param: request.body,
+                    error: err,
+                });
+
                 return reply.code(400).send({
                     success: false,
                     message: 'Error get data.',
@@ -63,6 +84,13 @@ export default fp((server, opts, next) => {
             });
             
         } catch(error) {
+            server.apm.captureError({
+                method: request.routerMethod,
+                path: request.routerPath,
+                param: request.body,
+                error: error,
+            });
+
             request.log.error(error);
             return reply.send(400);
         }

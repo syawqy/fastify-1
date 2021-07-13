@@ -1,5 +1,6 @@
 import fp from 'fastify-plugin';
 import Sequelize from 'sequelize';
+import { sendApmError } from '../../../utils';
 
 import { publish } from '../../../plugins/kafka/producer';
 import { insert,getAll,getOne,update,remove } from '../../services/book-service';
@@ -17,20 +18,22 @@ export default fp((server, opts, next) => {
                     data
                 });
             }).catch(err => {
-                server.apm.captureError({
-                    method: request.routerMethod,
-                    path: request.routerPath,
-                    param: request.body,
-                    error: err,
-                })
+                sendApmError(server,request,err);
 
                 return reply.code(400).send({
                     success: false,
-                    message: 'Error get data.',
+                    message: 'Error insert data.',
                     err,
                 });
             });
         } catch(error) {
+            server.apm.captureError({
+                method: request.routerMethod,
+                path: request.routerPath,
+                param: request.body,
+                error: error,
+            });
+
             request.log.error(error);
             return reply.send(400);
         }
@@ -50,8 +53,9 @@ export default fp((server, opts, next) => {
                     path: request.routerPath,
                     param: request.body,
                     error: err,
-                })
-                
+                    stack: err.stack
+                });
+
                 return reply.code(400).send({
                     success: false,
                     message: 'Error get data.',
@@ -59,6 +63,13 @@ export default fp((server, opts, next) => {
                 });
             });
         } catch(error) {
+            server.apm.captureError({
+                method: request.routerMethod,
+                path: request.routerPath,
+                param: request.body,
+                error: error,
+            });
+
             request.log.error(error);
             return reply.send(400);
         }
@@ -74,6 +85,8 @@ export default fp((server, opts, next) => {
                     data
                 });
             }).catch(err => {
+                sendApmError(server,request,err);;
+
                 return reply.code(400).send({
                     success: false,
                     message: 'Error get data.',
@@ -81,6 +94,13 @@ export default fp((server, opts, next) => {
                 });
             });
         } catch(error) {
+            server.apm.captureError({
+                method: request.routerMethod,
+                path: request.routerPath,
+                param: request.body,
+                error: error,
+            });
+
             request.log.error(error);
             return reply.send(400);
         }
@@ -102,6 +122,13 @@ export default fp((server, opts, next) => {
                 });
             });
         } catch(error) {
+            server.apm.captureError({
+                method: request.routerMethod,
+                path: request.routerPath,
+                param: request.body,
+                error: error,
+            });
+
             request.log.error(error);
             return reply.send(400);
         }
@@ -117,13 +144,22 @@ export default fp((server, opts, next) => {
                     data
                 });
             }).catch(err => {
+                sendApmError(server,request,err);;
+
                 return reply.code(400).send({
                     success: false,
-                    message: 'Error get data.',
+                    message: 'Error delete data.',
                     err,
                 });
             });
         } catch(error) {
+            server.apm.captureError({
+                method: request.routerMethod,
+                path: request.routerPath,
+                param: request.body,
+                error: error,
+            });
+
             request.log.error(error);
             return reply.send(400);
         }

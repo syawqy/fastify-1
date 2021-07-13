@@ -83,14 +83,13 @@ export const createServer = () => new Promise((resolve, reject) => {
 
     //-----------------------------------------------------
     server.addHook('onRequest', async (request, reply, error) => {
-        apm.setTransactionName('z ' + request.method + ' ' + request.url);
+        apm.setTransactionName('⭐ ' + request.method + ' ' + request.url);
     });
 
     // global hook error handling for unhandled error
     server.addHook('onError', async (request, reply, error) => {
         const { message, stack } = error;
         let err = {
-
             method: request.routerMethod,
             path: request.routerPath,
             param: request.body,

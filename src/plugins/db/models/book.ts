@@ -23,7 +23,7 @@ const book = {
     bookTitle: { type: DataTypes.STRING, allowNull: false, unique: false },
     author: { type: DataTypes.STRING, allowNull: false, unique: false },
     subject: { type: DataTypes.STRING, allowNull: false, unique: false },
-    year: { type: DataTypes.INTEGER, allowNull: false, unique: false },
+    year: { type: DataTypes.INTEGER, allowNull: false, unique: false, validate: { min:1000,max:2100 }  },
     createdDate: { type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: false },
     createdBy: { type: DataTypes.STRING, allowNull: false },
     LastUpdatedDate: { type: DataTypes.DATE, defaultValue: DataTypes.NOW, allowNull: true },
