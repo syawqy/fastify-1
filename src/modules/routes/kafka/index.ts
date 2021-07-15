@@ -1,60 +1,13 @@
 import fp from 'fastify-plugin';
 import Sequelize from 'sequelize';
 
-import {insert,insertBulk } from '../../services/kafkaService';
+import KafkaService from '../../services/kafkaService';
 import { publish } from '../../../plugins/kafka/producer';
-import { kafkaSubscribe } from '../../../plugins/kafka/consumer';
 import { ConsumeTO,PublishTO } from './schema';
+import { sendApmError } from '../../../utils';
 
 export default fp((server, opts, next) => {
-
-    server.post("/kafka/subscribe", {schema : ConsumeTO}, (request, reply) => {
-        try {
-            const { topic } = request.body;
-
-            let count = 0;
-            let data = [];
-
-            kafkaSubscribe(server.kafkaClient, topic, async (messages) => {
-                count++;
-                data.push(messages);
-                
-                if (count == messages.highWaterOffset) {
-                    insertBulk(server,{rows:data}).then(data => {
-                        return reply.code(200).send({
-                            success: true,
-                            message: 'subscribed data has been saved',
-                            data
-                        });
-                    }).catch(err => {
-                        server.apm.captureError({
-                            method: request.routerMethod,
-                            path: request.routerPath,
-                            param: request.body,
-                            error: err,
-                        });
-
-                        return reply.code(400).send({
-                            success: false,
-                            message: 'Error insert to db.',
-                            err,
-                        });
-                    });
-                }
-            });
-
-        } catch(error) {
-            server.apm.captureError({
-                method: request.routerMethod,
-                path: request.routerPath,
-                param: request.body,
-                error: error,
-            });
-
-            request.log.error(error);
-            return reply.send(400);
-        }
-    });
+    const kafkaService = new KafkaService(server);
 
     server.post("/kafka/publish", {schema : PublishTO}, (request, reply) => {
         try {
@@ -69,12 +22,7 @@ export default fp((server, opts, next) => {
                     data
                 });
             }).catch(err => {
-                server.apm.captureError({
-                    method: request.routerMethod,
-                    path: request.routerPath,
-                    param: request.body,
-                    error: err,
-                });
+                sendApmError(server,request,err);
 
                 return reply.code(400).send({
                     success: false,
@@ -84,12 +32,7 @@ export default fp((server, opts, next) => {
             });
             
         } catch(error) {
-            server.apm.captureError({
-                method: request.routerMethod,
-                path: request.routerPath,
-                param: request.body,
-                error: error,
-            });
+            sendApmError(server,request,error);
 
             request.log.error(error);
             return reply.send(400);

@@ -1,6 +1,8 @@
 import { fastify } from 'fastify';
 import fastifyBlipp from "fastify-blipp";
 import fastifySwagger from "fastify-swagger";
+import fastifyJwt from "fastify-jwt";
+import fastifySchedule from 'fastify-schedule';
 import AutoLoad from "fastify-autoload";
 import apmServer from 'elastic-apm-node';
 import * as path from "path";
@@ -10,6 +12,9 @@ import { swagger } from './config/index';
 
 import dbPlugin from './plugins/db';
 import kafkaPlugin from './plugins/kafka';
+import redisPlugin from './plugins/redis';
+import authPlugin from './plugins/auth';
+import { sendApmErrorString } from './utils';
 
 dotenv.config({
     path: path.resolve('.env'),
@@ -54,11 +59,28 @@ export const createServer = () => new Promise((resolve, reject) => {
     });
 
     //-----------------------------------------------------
+    // decorators
+    server.decorate('conf', { port, secretKey, expireToken, redisPort, redistHost, apmUrl, dbDialect, db, dbHost, dbPort, dbUsername, dbPassword, kafkaHost });
+    //apm 
+    server.decorate('apm', apmServer);
+
+    //-----------------------------------------------------
     // register plugin below:
     server.register(fastifyBlipp);
     
+    // jwt
+    server.register(fastifyJwt, { secret: secretKey })
+
+    server.register(fastifySchedule);
+
     // swagger / open api
     server.register(fastifySwagger, swagger.options);
+
+    // plugin
+    server.register(dbPlugin);
+    server.register(kafkaPlugin);
+    server.register(redisPlugin);
+    server.register(authPlugin);
 
     // auto register all routes 
     server.register(AutoLoad, {
@@ -70,16 +92,7 @@ export const createServer = () => new Promise((resolve, reject) => {
             hello: 'world'
         };
     });
-
-    //-----------------------------------------------------
-    // decorators
-    server.decorate('conf', { port, secretKey, expireToken, redisPort, redistHost, apmUrl, dbDialect, db, dbHost, dbPort, dbUsername, dbPassword, kafkaHost });
-    //apm 
-    server.decorate('apm', apmServer);
-
-    // plugin
-    server.register(dbPlugin);
-    server.register(kafkaPlugin);
+    
 
     //-----------------------------------------------------
     server.addHook('onRequest', async (request, reply, error) => {
@@ -97,7 +110,7 @@ export const createServer = () => new Promise((resolve, reject) => {
             stack
         };
 
-        apm.captureError(JSON.stringify(err));
+        sendApmErrorString(server,JSON.stringify(err));
     });
 
     // main

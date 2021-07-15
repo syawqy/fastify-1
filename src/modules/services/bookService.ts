@@ -9,61 +9,64 @@ export default class BookService {
         this.bookDb = BooksFactory(db);
     }
 
-    insert = (body) => new Promise((resolve,reject) => {
-        const {bookTitle,author,subject,year} = body;
-    
-        this.bookDb.create({bookTitle,author,subject,year, createdBy : "user"})
-            .then(data => {
-                const {bookTitle,author,subject,year, createdBy} = data;
-                resolve({bookTitle,author,subject,year, createdBy});
-            }).catch(err => {
-                reject(err);
-            });
-    });
+    insert = async (body) => {
+        try {
+            const {bookTitle,author,subject,year} = body;
+            let data = await this.bookDb.create({bookTitle,author,subject,year, createdBy : "user"});
+            const {createdBy} = data;
+            return {bookTitle,author,subject,year, createdBy};
+        }catch(err) {
+            throw err;
+        }
+    }
 
-    getAll = (body) => new Promise((resolve,reject) => {
-        const {pageSize,pageNum} = body;
-        const offset = pageNum*pageSize;
-    
-        this.bookDb.findAll({limit:pageSize,offset})
-            .then(data => {
-                resolve(data);
-            }).catch(err => {
-                reject(err);
-            });
-    });
-
-    getOne = (body) => new Promise((resolve,reject) => {
-        const {bookId} = body;
+    getAll = async (body) => {
+        try {
+            const {pageSize,pageNum} = body;
+            const offset = pageNum*pageSize;
         
-        this.bookDb.findByPk(bookId)
-            .then(data => {
-                resolve(data);
-            }).catch(err => {
-                reject(err);
-            });
-    });
+            let data = await this.bookDb.findAll({limit:pageSize,offset});
+            return data;
+        }catch(err) {
+            throw err;
+        }
+    }
+
+    getOne = async (body) => {
+        try {
+            const {bookId} = body;
+        
+            let data = await this.bookDb.findOne({where:{bookId}});
+            return data;
+        }catch(err) {
+            throw err;
+        }
+    }
     
-    update = (body) => new Promise((resolve,reject) => {
-        const {bookId,bookTitle,author,subject,year} = body;
+    update = async (body) => {
+        try {
+            const {bookId,bookTitle,author,subject,year} = body;
     
-        this.bookDb.update({bookTitle,author,subject,year},{where:{bookId}})
-            .then(data => {
-                resolve(data);
-            }).catch(err => {
-                reject(err);
-            });
-    });
+            let data = await this.bookDb.update({bookTitle,author,subject,year},{where:{bookId}});
+            return data;
+        }catch(err) {
+            throw err;
+        }
+    }
     
-    remove = (body) => new Promise((resolve,reject) => {
-        const {bookId} = body;
-    
-        this.bookDb.destroy({where:{bookId}})
-            .then(data => {
-                resolve(data);
-            }).catch(err => {
-                reject(err);
-            });
-    });
+    remove = async (body) => {
+        try {
+            const {bookId} = body;
+            let getData = await this.bookDb.findOne({where:{bookId}});
+            if(getData) {
+                let data = await this.bookDb.destroy({where:{bookId}});
+                return data;
+            }else {
+                throw "data tidak ditemukan";
+            }
+        }catch(err) {
+            throw err;
+        }
+    }
 
 }

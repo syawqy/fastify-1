@@ -28,12 +28,7 @@ export default fp((server, opts, next) => {
                 });
             });
         } catch(error) {
-            server.apm.captureError({
-                method: request.routerMethod,
-                path: request.routerPath,
-                param: request.body,
-                error: error,
-            });
+            sendApmError(server,request,error);
 
             request.log.error(error);
             return reply.send(400);
@@ -64,12 +59,7 @@ export default fp((server, opts, next) => {
                 });
             });
         } catch(error) {
-            server.apm.captureError({
-                method: request.routerMethod,
-                path: request.routerPath,
-                param: request.body,
-                error: error,
-            });
+            sendApmError(server,request,error);
 
             request.log.error(error);
             return reply.send(400);
@@ -86,7 +76,7 @@ export default fp((server, opts, next) => {
                     data
                 });
             }).catch(err => {
-                sendApmError(server,request,err);;
+                sendApmError(server,request,err);
 
                 return reply.code(400).send({
                     success: false,
@@ -95,12 +85,7 @@ export default fp((server, opts, next) => {
                 });
             });
         } catch(error) {
-            server.apm.captureError({
-                method: request.routerMethod,
-                path: request.routerPath,
-                param: request.body,
-                error: error,
-            });
+            sendApmError(server,request,error);
 
             request.log.error(error);
             return reply.send(400);
@@ -123,12 +108,7 @@ export default fp((server, opts, next) => {
                 });
             });
         } catch(error) {
-            server.apm.captureError({
-                method: request.routerMethod,
-                path: request.routerPath,
-                param: request.body,
-                error: error,
-            });
+            sendApmError(server,request,error);
 
             request.log.error(error);
             return reply.send(400);
@@ -154,12 +134,7 @@ export default fp((server, opts, next) => {
                 });
             });
         } catch(error) {
-            server.apm.captureError({
-                method: request.routerMethod,
-                path: request.routerPath,
-                param: request.body,
-                error: error,
-            });
+            sendApmError(server,request,error);
 
             request.log.error(error);
             return reply.send(400);

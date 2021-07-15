@@ -19,8 +19,8 @@ export const kafkaSubscribe = (client: Client, topic: string, send: (message: Me
             throw err;
         }
 
-        consumer.on('message', (message) => {
-            send(message);
+        consumer.on('message', async (message) => {
+            await send(message);
         });
 
         /*

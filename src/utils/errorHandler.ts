@@ -10,3 +10,7 @@ export const sendApmError = (server,request,error) => {
     };
     server.apm.captureError(err);
 };
+
+export const sendApmErrorString = (server,error) => {
+    server.apm.captureError(error);
+};
