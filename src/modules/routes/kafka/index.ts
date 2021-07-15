@@ -1,7 +1,7 @@
 import fp from 'fastify-plugin';
 import Sequelize from 'sequelize';
 
-import {insert,insertBulk } from '../../services/kafka-service';
+import {insert,insertBulk } from '../../services/kafkaService';
 import { publish } from '../../../plugins/kafka/producer';
 import { kafkaSubscribe } from '../../../plugins/kafka/consumer';
 import { ConsumeTO,PublishTO } from './schema';

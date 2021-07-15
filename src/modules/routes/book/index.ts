@@ -3,14 +3,15 @@ import Sequelize from 'sequelize';
 import { sendApmError } from '../../../utils';
 
 import { publish } from '../../../plugins/kafka/producer';
-import { insert,getAll,getOne,update,remove } from '../../services/book-service';
+import BookService from '../../services/bookService';
 import { GetBookTO,BookTO,GetOneBookTO,DeleteBookTO,CreateBookTO } from './schema';
 
 export default fp((server, opts, next) => {
+    const bookService = new BookService(server.db);
 
     server.post("/book", {schema : CreateBookTO}, (request, reply) => {
         try {
-            insert(server,request.body).then(data => {
+            bookService.insert(request.body).then(data => {
                 publish(server.kafkaClient,"bookInsert",JSON.stringify(data));
                 return reply.code(200).send({
                     success: true,
@@ -41,7 +42,7 @@ export default fp((server, opts, next) => {
 
     server.get("/book/getAll/:pageSize/:pageNum", {schema : GetBookTO}, (request, reply) => {
         try {
-            getAll(server,request.params).then(data => {
+            bookService.getAll(request.params).then(data => {
                 return reply.code(200).send({
                     success: true,
                     message: 'Successful!',
@@ -77,7 +78,7 @@ export default fp((server, opts, next) => {
 
     server.get("/book/:bookId", {schema : GetOneBookTO}, (request, reply) => {
         try {
-            getOne(server,request.params).then(data => {
+            bookService.getOne(request.params).then(data => {
                 console.log(data);
                 return reply.code(200).send({
                     success: true,
@@ -108,7 +109,7 @@ export default fp((server, opts, next) => {
 
     server.post("/book/update", {schema : BookTO}, (request, reply) => {
         try {
-            update(server,request.body).then(data => {
+            bookService.update(request.body).then(data => {
                 return reply.code(200).send({
                     success: true,
                     message: 'Successful!',
@@ -136,7 +137,7 @@ export default fp((server, opts, next) => {
 
     server.post("/book/delete", {schema : DeleteBookTO}, (request, reply) => {
         try {
-            remove(server,request.body).then(data => {
+            bookService.remove(request.body).then(data => {
                 console.log(data);
                 return reply.code(200).send({
                     success: true,
