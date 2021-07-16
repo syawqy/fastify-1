@@ -1,7 +1,7 @@
-import {BooksFactory} from "./Book";
-import {KafkaMessagesFactory} from "./kafkaMessage";
+import { BooksFactory } from './Book'
+import { KafkaMessagesFactory } from './kafkaMessage'
 
 export {
-    BooksFactory,
-    KafkaMessagesFactory
-};
+  BooksFactory,
+  KafkaMessagesFactory
+}

@@ -1,6 +1,6 @@
-import { sendApmError,sendApmErrorString } from './errorHandler';
+import { sendApmError, sendApmErrorString } from './errorHandler'
 
 export {
-    sendApmError,
-    sendApmErrorString
+  sendApmError,
+  sendApmErrorString
 }
